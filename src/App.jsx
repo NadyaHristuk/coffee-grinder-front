@@ -17,7 +17,7 @@ export default function App() {
 	const [mode, setMode] = useState('admin')
 	const [tab, setTab] = useState(0)
 	const [settingsTab, setSettingsTab] = useState(0)
-	const [showSettings, setShowSettings] = useState(false)
+	const [showSettings, setShowSettings] = useState(true)
 	const [news, setNews] = useState([])
 	const [selectedRows, setSelectedRows] = useState([])
 	const [toAdd, setToAdd] = useState([])
