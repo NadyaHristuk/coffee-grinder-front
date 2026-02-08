@@ -1,0 +1,72 @@
+[
+  {
+    "name": "11.mp3",
+    "path": "frontend/audio/11.mp3",
+    "size": 670450
+  },
+  {
+    "name": "13.mp3",
+    "path": "frontend/audio/13.mp3",
+    "size": 250819
+  },
+  {
+    "name": "14.mp3",
+    "path": "frontend/audio/14.mp3",
+    "size": 523328
+  },
+  {
+    "name": "15.mp3",
+    "path": "frontend/audio/15.mp3",
+    "size": 486130
+  },
+  {
+    "name": "16.mp3",
+    "path": "frontend/audio/16.mp3",
+    "size": 415495
+  },
+  {
+    "name": "17.mp3",
+    "path": "frontend/audio/17.mp3",
+    "size": 365340
+  },
+  {
+    "name": "18.mp3",
+    "path": "frontend/audio/18.mp3",
+    "size": 415077
+  },
+  {
+    "name": "19.mp3",
+    "path": "frontend/audio/19.mp3",
+    "size": 524164
+  },
+  {
+    "name": "3.mp3",
+    "path": "frontend/audio/3.mp3",
+    "size": 540465
+  },
+  {
+    "name": "4.mp3",
+    "path": "frontend/audio/4.mp3",
+    "size": 581425
+  },
+  {
+    "name": "5.mp3",
+    "path": "frontend/audio/5.mp3",
+    "size": 434303
+  },
+  {
+    "name": "6.mp3",
+    "path": "frontend/audio/6.mp3",
+    "size": 490728
+  },
+  {
+    "name": "7.mp3",
+    "path": "frontend/audio/7.mp3",
+    "size": 649134
+  },
+  {
+    "name": "8.mp3",
+    "path": "frontend/audio/8.mp3",
+    "size": 369519
+  }
+]
