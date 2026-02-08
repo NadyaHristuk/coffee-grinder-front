@@ -179,6 +179,157 @@ export default function App() {
 					<Divider sx={{ my: 3 }} />
 					<Typography variant="h6" gutterBottom>Последние новости</Typography>
 					<NewsTable rows={news} onSelectRemove={setSelectedRows} density="compact" />
+
+					{/* ── Settings toggle ── */}
+					<Divider sx={{ my: 3 }} />
+					<Button
+						variant="text"
+						onClick={() => setShowSettings(prev => !prev)}
+						sx={{ mb: 1, textTransform: 'none', color: 'text.secondary' }}
+					>
+						{showSettings ? '\u25BC' : '\u25B6'} Настройки и технические данные
+					</Button>
+
+					<Collapse in={showSettings}>
+						<Tabs
+							value={settingsTab}
+							onChange={(_, next) => setSettingsTab(next)}
+							variant="scrollable"
+							scrollButtons="auto"
+							sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}
+						>
+							{techTabs.map((t, i) => (
+								<Tab key={i} label={t.label} />
+							))}
+						</Tabs>
+
+						{/* ── Settings 0: News ── */}
+						{settingsTab === 0 && (
+							<Box>
+								{mode === 'editor' ? (
+									<NewsEditor
+										rows={news}
+										selected={selectedRows}
+										onAddUrl={url => setToAdd(prev => [...prev, url])}
+										onRemoveSelection={setSelectedRows}
+										onProcess={handleProcess}
+									/>
+								) : (
+									<Box mb={2}>
+										<Button variant="contained" onClick={handleProcess}>Обработать изменения</Button>
+									</Box>
+								)}
+								<NewsTable rows={news} onSelectRemove={setSelectedRows} />
+							</Box>
+						)}
+
+						{/* ── Settings 1: Prompts ── */}
+						{settingsTab === 1 && (
+							<PromptsEditor
+								headers={prompts.headers || []}
+								rows={prompts.rows || []}
+								onSave={handleSavePrompts}
+								canSaveGoogle={apiStatus.ok}
+								onSaveGoogle={payload => saveSheetRemote('ai-instructions', payload)}
+							/>
+						)}
+
+						{/* ── Settings 2: All Sheets ── */}
+						{settingsTab === 2 && (
+							<Box>
+								<Typography variant="h6" gutterBottom>Все листы таблицы</Typography>
+								<Tabs
+									value={activeSheet}
+									onChange={(_, next) => setActiveSheet(next)}
+									variant="scrollable"
+									scrollButtons="auto"
+									sx={{ mb: 2 }}
+								>
+									{Object.keys(sheets || {}).map(name => (
+										<Tab key={name} label={name} value={name} />
+									))}
+								</Tabs>
+								{activeSheet && (
+									<SheetTable
+										headers={sheets?.[activeSheet]?.headers || []}
+										rows={sheets?.[activeSheet]?.rows || []}
+									/>
+								)}
+							</Box>
+						)}
+
+						{/* ── Settings 3: REF ── */}
+						{settingsTab === 3 && (
+							<SheetEditor
+								title="REF"
+								headers={sheets?.REF?.headers || []}
+								rows={sheets?.REF?.rows || []}
+								onSave={payload => {
+									saveSheetLocal('REF', payload)
+									setSheets(prev => ({ ...prev, REF: payload }))
+								}}
+								canSaveGoogle={apiStatus.ok}
+								onSaveGoogle={payload => saveSheetRemote('REF', payload)}
+							/>
+						)}
+
+						{/* ── Settings 4: Schedule ── */}
+						{settingsTab === 4 && (
+							sheets?.schedule ? (
+								<SheetEditor
+									title="Расписание"
+									headers={sheets?.schedule?.headers || []}
+									rows={sheets?.schedule?.rows || []}
+									onSave={payload => {
+										saveSheetLocal('schedule', payload)
+										setSheets(prev => ({ ...prev, schedule: payload }))
+									}}
+									canSaveGoogle={apiStatus.ok}
+									onSaveGoogle={payload => saveSheetRemote('schedule', payload)}
+								/>
+							) : (
+								<Typography color="text.secondary">Лист "schedule" не найден в таблице.</Typography>
+							)
+						)}
+
+						{/* ── Settings 5: Errors ── */}
+						{settingsTab === 5 && (
+							sheets?.errors ? (
+								<SheetEditor
+									title="Ошибки"
+									headers={sheets?.errors?.headers || []}
+									rows={sheets?.errors?.rows || []}
+									onSave={payload => {
+										saveSheetLocal('errors', payload)
+										setSheets(prev => ({ ...prev, errors: payload }))
+									}}
+									canSaveGoogle={apiStatus.ok}
+									onSaveGoogle={payload => saveSheetRemote('errors', payload)}
+								/>
+							) : (
+								<Typography color="text.secondary">Лист "errors" не найден в таблице.</Typography>
+							)
+						)}
+
+						{/* ── Settings 6: Audio Prompts ── */}
+						{settingsTab === 6 && (
+							sheets?.audio ? (
+								<SheetEditor
+									title="Audio Промпты"
+									headers={sheets?.audio?.headers || []}
+									rows={sheets?.audio?.rows || []}
+									onSave={payload => {
+										saveSheetLocal('audio', payload)
+										setSheets(prev => ({ ...prev, audio: payload }))
+									}}
+									canSaveGoogle={apiStatus.ok}
+									onSaveGoogle={payload => saveSheetRemote('audio', payload)}
+								/>
+							) : (
+								<Typography color="text.secondary">Лист "audio" не найден в таблице.</Typography>
+							)
+						)}
+					</Collapse>
 				</Box>
 			)}
 
@@ -249,157 +400,6 @@ export default function App() {
 					)}
 				</Box>
 			)}
-
-			{/* ── Settings toggle ── */}
-			<Divider sx={{ my: 3 }} />
-			<Button
-				variant="text"
-				onClick={() => setShowSettings(prev => !prev)}
-				sx={{ mb: 1, textTransform: 'none', color: 'text.secondary' }}
-			>
-				{showSettings ? '\u25BC' : '\u25B6'} Настройки и технические данные
-			</Button>
-
-			<Collapse in={showSettings}>
-				<Tabs
-					value={settingsTab}
-					onChange={(_, next) => setSettingsTab(next)}
-					variant="scrollable"
-					scrollButtons="auto"
-					sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}
-				>
-					{techTabs.map((t, i) => (
-						<Tab key={i} label={t.label} />
-					))}
-				</Tabs>
-
-				{/* ── Settings 0: News ── */}
-				{settingsTab === 0 && (
-					<Box>
-						{mode === 'editor' ? (
-							<NewsEditor
-								rows={news}
-								selected={selectedRows}
-								onAddUrl={url => setToAdd(prev => [...prev, url])}
-								onRemoveSelection={setSelectedRows}
-								onProcess={handleProcess}
-							/>
-						) : (
-							<Box mb={2}>
-								<Button variant="contained" onClick={handleProcess}>Обработать изменения</Button>
-							</Box>
-						)}
-						<NewsTable rows={news} onSelectRemove={setSelectedRows} />
-					</Box>
-				)}
-
-				{/* ── Settings 1: Prompts ── */}
-				{settingsTab === 1 && (
-					<PromptsEditor
-						headers={prompts.headers || []}
-						rows={prompts.rows || []}
-						onSave={handleSavePrompts}
-						canSaveGoogle={apiStatus.ok}
-						onSaveGoogle={payload => saveSheetRemote('ai-instructions', payload)}
-					/>
-				)}
-
-				{/* ── Settings 2: All Sheets ── */}
-				{settingsTab === 2 && (
-					<Box>
-						<Typography variant="h6" gutterBottom>Все листы таблицы</Typography>
-						<Tabs
-							value={activeSheet}
-							onChange={(_, next) => setActiveSheet(next)}
-							variant="scrollable"
-							scrollButtons="auto"
-							sx={{ mb: 2 }}
-						>
-							{Object.keys(sheets || {}).map(name => (
-								<Tab key={name} label={name} value={name} />
-							))}
-						</Tabs>
-						{activeSheet && (
-							<SheetTable
-								headers={sheets?.[activeSheet]?.headers || []}
-								rows={sheets?.[activeSheet]?.rows || []}
-							/>
-						)}
-					</Box>
-				)}
-
-				{/* ── Settings 3: REF ── */}
-				{settingsTab === 3 && (
-					<SheetEditor
-						title="REF"
-						headers={sheets?.REF?.headers || []}
-						rows={sheets?.REF?.rows || []}
-						onSave={payload => {
-							saveSheetLocal('REF', payload)
-							setSheets(prev => ({ ...prev, REF: payload }))
-						}}
-						canSaveGoogle={apiStatus.ok}
-						onSaveGoogle={payload => saveSheetRemote('REF', payload)}
-					/>
-				)}
-
-				{/* ── Settings 4: Schedule ── */}
-				{settingsTab === 4 && (
-					sheets?.schedule ? (
-						<SheetEditor
-							title="Расписание"
-							headers={sheets?.schedule?.headers || []}
-							rows={sheets?.schedule?.rows || []}
-							onSave={payload => {
-								saveSheetLocal('schedule', payload)
-								setSheets(prev => ({ ...prev, schedule: payload }))
-							}}
-							canSaveGoogle={apiStatus.ok}
-							onSaveGoogle={payload => saveSheetRemote('schedule', payload)}
-						/>
-					) : (
-						<Typography color="text.secondary">Лист "schedule" не найден в таблице.</Typography>
-					)
-				)}
-
-				{/* ── Settings 5: Errors ── */}
-				{settingsTab === 5 && (
-					sheets?.errors ? (
-						<SheetEditor
-							title="Ошибки"
-							headers={sheets?.errors?.headers || []}
-							rows={sheets?.errors?.rows || []}
-							onSave={payload => {
-								saveSheetLocal('errors', payload)
-								setSheets(prev => ({ ...prev, errors: payload }))
-							}}
-							canSaveGoogle={apiStatus.ok}
-							onSaveGoogle={payload => saveSheetRemote('errors', payload)}
-						/>
-					) : (
-						<Typography color="text.secondary">Лист "errors" не найден в таблице.</Typography>
-					)
-				)}
-
-				{/* ── Settings 6: Audio Prompts ── */}
-				{settingsTab === 6 && (
-					sheets?.audio ? (
-						<SheetEditor
-							title="Audio Промпты"
-							headers={sheets?.audio?.headers || []}
-							rows={sheets?.audio?.rows || []}
-							onSave={payload => {
-								saveSheetLocal('audio', payload)
-								setSheets(prev => ({ ...prev, audio: payload }))
-							}}
-							canSaveGoogle={apiStatus.ok}
-							onSaveGoogle={payload => saveSheetRemote('audio', payload)}
-						/>
-					) : (
-						<Typography color="text.secondary">Лист "audio" не найден в таблице.</Typography>
-					)
-				)}
-			</Collapse>
 		</Container>
 	)
 }
